@@ -84,7 +84,7 @@ class VentanaLogin:
         user=self.entry_nombre.get()
         passw=self.entry_contraseña.get()
 
-        existe= self.conexion("SELECT user, contraseña FROM cliente WHERE user=?", user)
+        existe= self.conexion("SELECT userCLIENTE, passwCLIENTE FROM cliente WHERE userCLIENTE=?", (user,))
 
         if(existe):
             if(existe[1]==passw):
@@ -100,11 +100,12 @@ class VentanaLogin:
         user=self.entry_nombre.get()
         password=self.entry_contraseña.get()
 
-        existe=self.conexion("SELECT user FROM cliente WHERE user=?", user)
+        existe=self.conexion("SELECT userCLIENTE FROM cliente WHERE userCLIENTE=?", (user,))
 
         if(existe):
             print("Ese nombre de usuario ya esta registrado.")
         else:
-            self.conexion("INSERT (user, password) INTO cliente VALUES (%S, %S)", user, password)
+            self.conexion("INSERT (userCLIENTE, passwCLIENTE) INTO cliente VALUES (%S, %S)", (user, password,))
+
 
         

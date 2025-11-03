@@ -44,10 +44,7 @@ class VentanaLogin:
         user=self.entry_nombre.get()
         passw=self.entry_contraseña.get()
 
-        msg=self.__controlador.login(user, passw)
-        
-        print(msg)
-        self.label_result.config(text=msg)
+        self.__controlador.login(user, passw)
 
     def register(self):
 
@@ -56,7 +53,7 @@ class VentanaLogin:
 
         msg=self.__controlador.register(user, password)
         
-        print(msg)
+        print(msg+"asd")
         self.label_result.config(text=msg)
     
     def cerrar(self):
@@ -85,7 +82,7 @@ class VentanaMenu:
         self.frame_buttons.pack(pady=10)
         
         tk.Button(self.frame_buttons, text="Registrar invernadero", command=lambda: self.abrir_registro()).pack(side="left")
-        tk.Button(self.frame_buttons, text="Control invernadero").pack(side="left")
+        tk.Button(self.frame_buttons, text="Control invernadero", command=lambda: self.abrir_control_invernaderos()).pack(side="left")
         tk.Button(self.frame_buttons, text="Enfermedades").pack(side="left")
         
         tk.Label(self.frame, text="Invernaderos: ", font=("bold")).pack(pady=5)
@@ -118,6 +115,10 @@ class VentanaMenu:
         nombre=self.entry_nombre.get()
         msg=self.__controlador.get_por_nombre(nombre)
         self.label_invernaderos.config(text=msg)
+    
+    def abrir_control_invernaderos(self):
+        
+        self.__controlador.abrir_controlador_invernaderos()
     
     def abrir_registro(self):
         
@@ -182,7 +183,7 @@ class VentanaRegistro:
         self.frame_botones=tk.Frame(self.frame_side2)
         self.frame_botones.pack(pady=15)
         
-        tk.Button(self.frame_botones, text="Guardar", command= lambda: self.registrar() ).pack(side="right", padx=5)
+        self.button_guardar=tk.Button(self.frame_botones, text="Guardar", command= lambda: self.registrar() ).pack(side="right", padx=5)
         tk.Button(self.frame_botones, text="Cancelar", command= lambda: self.abrir_menu()).pack(side="right", padx=5)
         
         self.label_resultado=tk.Label(self.frame_side2, text="")
@@ -209,6 +210,67 @@ class VentanaRegistro:
         msg=self.__controlador.registrar(nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego)
         print(msg)
         self.label_resultado.config(text=msg)
+    
+    def llenar_para_editar(self, id_invernadero):
+        inver=self.__controlador.get_invernaderos(id_invernadero)
+        
+        self.entry_nombre.insert(0, inver[0][1])
+        self.entry_superficie.insert(0, inver[0][2])
+        self.opcion_cultivo.set(inver[0][3])
+        self.entry_fecha.set_date( inver[0][4])
+        self.entry_responsable.insert(0, inver[0][5])
+        self.entry_capacidad.insert(0, inver[0][6])
+        self.opcion_riego.set(inver[0][7])
+    
+    
+    def cambiar_boton_guardar(self, id_invernadero):
+        self.button_guardar.config(text="Actualizar")
+        self.button_guardar.config(command=lambda id_inver=id_invernadero: self.editar(id_inver))
+    
+    def editar(self):
+        self.__controlador
+    
+    def abrir_menu(self):
+        self.__controlador.abrir_menu()
+        
+    def cerrar(self):
+        self.frame.destroy()
+        
+    
+class VentanaControladorInvernaderos:
+    
+    def __init__(self):
+        
+        self.__controlador=None
+        self.frame=tk.Tk()
+        self.frame.geometry("500x500")
+        
+    def llenar_vista(self, invernaderos):
+        
+        for invernadero in invernaderos:
+            
+            frame_div=tk.Frame(self.frame)
+            frame_div.pack(pady=10)
+            
+            tk.Label(frame_div, text=invernadero[1]).pack(side="left", padx=15)
+            tk.Button(frame_div, text="Editar", command= lambda id_inver=invernadero[0]: self.abrir_editor(id_inver)).pack(side="left", padx=5)
+            tk.Button(frame_div, text="Eliminar").pack(side="left", padx=5)
+    
+    def iniciar(self):
+        self.frame.mainloop()
+    
+    def set_controlador(self, controlador):
+        self.__controlador=controlador
+    
+    def get_controlador(self):
+        return self.__controlador
+    
+    def get_invernaderos(self):
+        return self.__controlador.get_invernaderos()
+    
+    def abrir_editor(self, id_invernadero):
+        
+        self.__controlador.abrir_editor(id_invernadero)
         
     def abrir_menu(self):
         self.__controlador.abrir_menu()

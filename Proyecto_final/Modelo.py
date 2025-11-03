@@ -66,11 +66,11 @@ class ModeloLogin:
     
     def login(self, user, passw):
 
-        existe= self.conexion.consultar("SELECT userUSUARIO, passwUSUARIO FROM usuario WHERE userUSUARIO=%s", (user,))
+        existe= self.conexion.consultar("SELECT userUSUARIO, passwUSUARIO, idUSUARIO FROM usuario WHERE userUSUARIO=%s", (user,))
 
         if(existe):
             if(existe[0][1]==passw):
-                return "1"
+                return existe[0][2]
 
             else:
                 return "Contraseña invalida"
@@ -93,9 +93,10 @@ class ModeloMenu:
     def __init__(self, conexion):
         self.conexion=conexion
     
-    def get_invernaderos(self):
+    def get_invernaderos(self, id_usuario):
 
-        invernaderos= self.conexion.consultar("SELECT idINVERNADERO, nomINVERNADERO, responsableINVERNADERO, fechaCreacINVERNADERO FROM invernadero")
+        sql="SELECT idINVERNADERO, nomINVERNADERO, responsableINVERNADERO, fechaCreacINVERNADERO FROM invernadero WHERE idUSUARIO=%s"
+        invernaderos= self.conexion.consultar(sql, (id_usuario,))
         
         msg=""
         
@@ -127,18 +128,45 @@ class ModeloRegistro:
     def __init__(self, conexion):
         self.conexion=conexion
     
-    def registrar(self, nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego):
+    def registrar(self, nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego, id_usuario):
         
         
-        sql="INSERT INTO invernadero (nomINVERNADERO, superfINVERNADERO, tipoCultivoINVERNADERO, fechaCreacINVERNADERO, responsableINVERNADERO, capacINVERNADERO, sistRiegoINVERNADERO)"
-        sql+=" VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        sql="INSERT INTO invernadero (nomINVERNADERO, superfINVERNADERO, tipoCultivoINVERNADERO, fechaCreacINVERNADERO, responsableINVERNADERO, capacINVERNADERO, sistRiegoINVERNADERO, idUSUARIO)"
+        sql+=" VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
         
         try:
-            self.conexion.ejecutar(sql, (nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego,))
+            self.conexion.ejecutar(sql, (nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego, id_usuario,))
         
         except Exception as e:
             print(f"Error: {e}")
             
         return "Registro de invernadero exitoso."
-            
+
+class ModeloEditor:
+    
+    def __init__(self, conexion):
+        self.conexion=conexion
+    
+    def get_invernadero(self, id_invernadero):
         
+        sql="SELECT * from invernadero WHERE idINVERNADERO=%s"
+        
+        try:
+            invernadero=self.conexion.consultar(sql, (id_invernadero,))       
+        except Exception as e:
+            print(f"Error: {e}")
+        
+        return invernadero    
+               
+        
+class ModeloControladorInvernaderos:
+    
+    def __init__(self, conexion):
+        self.conexion=conexion
+        
+    def get_invernaderos(self, id_usuario):
+
+        sql="SELECT idINVERNADERO, nomINVERNADERO, responsableINVERNADERO FROM invernadero WHERE idUSUARIO=%s"
+        invernaderos= self.conexion.consultar(sql, (id_usuario,))
+        
+        return invernaderos

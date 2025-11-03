@@ -46,6 +46,7 @@ class ControladorPrincipal:
         self.controlador_por_vista = ControladorEditor(self.conexion, self)
         self.vista.set_controlador(self.controlador_por_vista)
         self.vista.llenar_para_editar(id_invernadero)
+        self.vista.cambiar_boton_guardar(id_invernadero)
         self.vista.iniciar()
         
 
@@ -88,7 +89,7 @@ class ControladorMenu:
         id_usuario=self.controladorP.id_usuario
         msg=self.modelo_menu.get_invernaderos(id_usuario)
         if(msg=="0"):
-            msg="No hay invernaderos registrados"
+            msg="No hay invernaderos registrados..."
         return msg
     
     def get_por_nombre(self, nombre):
@@ -121,6 +122,10 @@ class ControladorRegistro:
     
     def abrir_menu(self):
         self.controladorP.abrir_menu()
+        
+    def regresar(self):
+        
+        self.controladorP.abrir_menu()
     
 class ControladorInvernaderos:
     
@@ -136,6 +141,14 @@ class ControladorInvernaderos:
         
         id_usuario=self.controladorP.id_usuario
         return self.modelo_cont_inver.get_invernaderos(id_usuario)
+    
+    def eliminar(self, id_inver):
+        
+        msg=self.modelo_cont_inver.eliminar(id_inver)
+        return msg
+    
+    def regresar(self):
+        self.controladorP.abrir_menu()
         
 class ControladorEditor:
     
@@ -152,3 +165,13 @@ class ControladorEditor:
         invernadero=self.modelo_editor.get_invernadero(id_invernadero)
         
         return invernadero
+    
+    def actualizar(self, nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego, id_inver):
+        
+        id_usuario=self.controladorP.id_usuario
+        msg=self.modelo_editor.actualizar(nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego, id_usuario, id_inver)
+        
+        return msg
+    
+    def regresar(self):
+        self.controladorP.abrir_controlador_invernaderos()

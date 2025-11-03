@@ -134,13 +134,15 @@ class ModeloRegistro:
         sql="INSERT INTO invernadero (nomINVERNADERO, superfINVERNADERO, tipoCultivoINVERNADERO, fechaCreacINVERNADERO, responsableINVERNADERO, capacINVERNADERO, sistRiegoINVERNADERO, idUSUARIO)"
         sql+=" VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
         
+        msg="Registro de invernadero exitoso."
         try:
             self.conexion.ejecutar(sql, (nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego, id_usuario,))
-        
         except Exception as e:
             print(f"Error: {e}")
+            msg="Registro de invernadero fallido"
+        return msg
             
-        return "Registro de invernadero exitoso."
+        
 
 class ModeloEditor:
     
@@ -157,7 +159,22 @@ class ModeloEditor:
             print(f"Error: {e}")
         
         return invernadero    
-               
+    
+    def actualizar(self, nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego, id_usuario, id_inver):
+        
+        sql="UPDATE invernadero SET nomINVERNADERO=%s, superfINVERNADERO=%s, tipoCultivoINVERNADERO=%s, "
+        sql+="fechaCreacINVERNADERO=%s, responsableINVERNADERO=%s, capacINVERNADERO=%s, sistRiegoINVERNADERO=%s, idUSUARIO=%s WHERE idINVERNADERO=%s"
+        
+        msg="Actualizacion del invernadero exitoso." 
+        try:
+            self.conexion.ejecutar(sql, (nom, superficie, tipo_cultivo, fecha_creacion, responsable, capacidad, sistema_riego, id_usuario, id_inver,))
+        
+        except Exception as e:
+            print(f"Error: {e}")
+            msg="No se pudo efectuar la\nactualizacion del invernadero"
+        
+        return msg
+             
         
 class ModeloControladorInvernaderos:
     
@@ -170,3 +187,17 @@ class ModeloControladorInvernaderos:
         invernaderos= self.conexion.consultar(sql, (id_usuario,))
         
         return invernaderos
+    
+    def eliminar(self, id_inver):
+        
+        sql="DELETE FROM invernadero WHERE idINVERNADERO=%s"
+        
+        msg="Eliminacion exitosa"   
+        try:
+            ejecucion=self.conexion.ejecutar(sql, (id_inver,))
+        except Exception as e:
+            print(f"Error: {e}")
+            msg="Eliminacion fallida"
+            
+        return msg
+        
